@@ -38,9 +38,8 @@ queue_init(){
 }
 
 static queue_node*
-make_queue_node(){
-	assert( buf_q );
-	queue* mqueue_ = buf_q;
+make_queue_node(queue* mqueue_){
+	assert( mqueue_ );
 
 	queue_node* p = mqueue_->head;
 	if( p ){
@@ -57,9 +56,8 @@ make_queue_node(){
 
 
 static node*
-release_queue_node(queue_node* p){
-	assert( buf_q && p );
-	queue* mqueue_ = buf_q;
+release_queue_node(queue* mqueue_, queue_node* p){
+	assert( mqueue_ && p );
 
 	if( mqueue_->size > MAX_BUF_Q ){
 		node* r = p->data;
@@ -89,7 +87,7 @@ queue_insert(node* nnode){
 	queue* mqueue_ = msg_q;
 
 	Lock( mqueue_->lock_ );
-	queue_node *p = make_queue_node();
+	queue_node *p = make_queue_node(mqueue_);
 	if( !mqueue_->head ){
 		mqueue_->head = p;
 	}
@@ -109,11 +107,12 @@ queue_pop(){
 	assert( msg_q );
 	node* p = NULL;
 	queue* mqueue_ = msg_q;
+	queue* bqueue_ = buf_q;
 	Lock( mqueue_->lock_ );
 	if( mqueue_->head ){
 		queue_node* q = mqueue_->head;
 		mqueue_->head = q->next;
-		p = release_queue_node(q);
+		p = release_queue_node(bqueue_, q);
 	}
 	UnLock( mqueue_->lock_ );
 	return p;
