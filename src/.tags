@@ -1,0 +1,130 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+AtomDec	.\comm.h	17;"	d
+AtomExc	.\comm.h	18;"	d
+AtomInc	.\comm.h	16;"	d
+BeCb	.\ltpoll.h	/^	typedef void ValueType::*BeCb(UnionData<ValueType>*);$/;"	t	class:ltpolldecode::ValueType
+CALL_ACCEPT	.\ltpoll.h	12;"	d
+CALL_RECV	.\ltpoll.h	13;"	d
+CALL_SEND	.\ltpoll.h	14;"	d
+CHECK	.\comm.h	26;"	d
+CHECK_MEM	.\comm.h	27;"	d
+COMM_API	.\comm.h	30;"	d
+CallCb	.\ltpoll.h	/^	void CallCb(){assert(retcb_ && ud_);retcb_(ud_)};$/;"	f	class:ltpolldecode
+CallMask	.\ltpoll.h	/^	typedef unsigned char CallMask;$/;"	t	class:ltpolldecode
+Container_	.\ltpoll.h	/^	typedef lt_container<_T, _Container> Container_;$/;"	t	class:lt_poll
+GetInstance	.\ltpoll.h	/^	static ltpoll* GetInstance(){ return ins;};$/;"	f	class:lt_poll_factory
+InitGlobelInstance	.\ltpoll.cpp	/^bool InitGlobelInstance(){$/;"	f
+InitInstance	.\ltpoll.cpp	/^ltpoll::InitInstance(const char* configstring, const ValueType& config_)$/;"	f	class:ltpoll
+InitLock	.\comm.h	8;"	d
+InitSpinLock	.\comm.h	7;"	d
+LUACFUNC	.\comm.c	4;"	d	file:
+Lock	.\comm.h	10;"	d
+Lock	.\comm.h	13;"	d
+LockType	.\comm.h	6;"	d
+MAX_BUF_Q	.\comm.h	31;"	d
+OPENAPI	.\queue.c	3;"	d	file:
+POLLFUNC	.\poll.c	3;"	d	file:
+Poll	.\comm.c	/^}Poll;$/;"	t	typeref:struct:Poll_	file:
+Poll_	.\comm.c	/^typedef struct Poll_{$/;"	s	file:
+SetCallAccept	.\ltpoll.h	/^	void SetCallAccept(){mask |= CALL_ACCEPT;};$/;"	f	class:ltpolldecode
+SetCallRecv	.\ltpoll.h	/^	void SetCallRecv(){mask |= CALL_RECV;};$/;"	f	class:ltpolldecode
+SetCallSend	.\ltpoll.h	/^	void SetCallSend(){mask |= CALL_SEND;};$/;"	f	class:ltpolldecode
+SetCb	.\ltpoll.h	/^	void SetCb(BeCb func,const UnionData<ValueType>& pud){$/;"	f	class:ltpolldecode
+SetMask	.\ltpoll.h	/^	void SetMask(CallMask pmask){mask = pmask;};$/;"	f	class:ltpolldecode
+UnLock	.\comm.h	11;"	d
+UnLock	.\comm.h	14;"	d
+ValueType	.\ltpoll.h	/^	typedef _T ValueType;$/;"	t	class:ltpolldecode
+WorkStatement	.\ltpoll.h	/^	lua_State * WorkStatement;$/;"	m	class:ltpolldecode
+_COMM_H_	.\comm.h	2;"	d
+_NET_H_	.\poll.h	2;"	d
+_QUEUE_H_	.\queue.h	2;"	d
+buf_q	.\queue.c	/^static queue* buf_q = NULL;$/;"	v	file:
+call_file_path_	.\comm.h	/^	const char* call_file_path_;$/;"	m	struct:logi_Set_
+call_func_name_	.\comm.h	/^	const char* call_func_name_;$/;"	m	struct:logi_Set_
+check_udata	.\comm.c	/^check_udata(lua_State* state, const char* name){$/;"	f	file:
+comm_u32	.\comm.h	29;"	d
+contain	.\ltpoll.h	/^	Container_ contain;$/;"	m	class:lt_poll
+container_	.\ltpoll.h	/^	_Container container_;$/;"	m	class:lt_container
+create_poll_err_	.\comm.c	/^const char* create_poll_err_ = "create poll err";$/;"	v
+data	.\queue.c	/^	node* data;$/;"	m	struct:queue_node_	file:
+data_node_	.\comm.h	/^typedef struct data_node_{$/;"	s
+data_type	.\comm.h	/^	unsigned char data_type;$/;"	m	struct:data_node_
+elfd	.\comm.c	/^	comm_u32  elfd;$/;"	m	struct:Poll_	file:
+fd	.\comm.c	/^	comm_u32  fd;$/;"	m	struct:Poll_	file:
+get_lgset	.\comm.c	/^get_lgset(){$/;"	f
+global_lock_	.\comm.c	/^	LockType global_lock_;$/;"	m	struct:Poll_	file:
+handle	.\comm.c	/^	int handle;$/;"	m	struct:thread_	file:
+head	.\queue.c	/^	queue_node_* head;$/;"	m	struct:queue_	file:
+init_lua_S	.\comm.c	/^init_lua_S(lua_State* state){$/;"	f	file:
+init_lua_err_	.\comm.c	/^const char* init_lua_err_ = "init lua err";$/;"	v
+init_poll_env	.\comm.c	/^init_poll_env(const char* config_){$/;"	f
+init_poll_struct	.\comm.c	/^init_poll_struct(lua_State* state){$/;"	f	file:
+init_worker_env	.\comm.c	/^init_worker_env(){$/;"	f	file:
+ins	.\ltpoll.cpp	/^ltpoll* ltpoll::ins = new ltpoll();$/;"	m	class:ltpoll	file:
+ins	.\ltpoll.h	/^	static ltpoll* ins;$/;"	m	class:lt_poll_factory
+l_alloc	.\comm.c	/^static void *l_alloc (void *ud, void *ptr, size_t osize, size_t nsize) {$/;"	f	file:
+l_alloc	.\ltpoll.cpp	/^static void *l_alloc (void *ud, void *ptr, size_t osize, size_t nsize) {$/;"	f	file:
+lg_set	.\comm.h	/^}lg_set;$/;"	t	typeref:struct:logi_Set_
+lgset	.\comm.c	/^static lg_set* lgset = NULL;$/;"	v	file:
+lock_	.\comm.c	/^	LockType lock_;$/;"	m	struct:thread_	file:
+lock_	.\ltpoll.h	/^	LockType lock_;$/;"	m	class:lt_container
+lock_	.\queue.c	/^	LockType lock_;$/;"	m	struct:queue_	file:
+log_path_	.\comm.h	/^	const char* log_path_;$/;"	m	struct:logi_Set_
+logi_Set_	.\comm.h	/^typedef struct logi_Set_{$/;"	s
+lt_container	.\ltpoll.h	/^	lt_container(){$/;"	f	class:lt_container
+lt_container	.\ltpoll.h	/^class lt_container{$/;"	c
+lt_poll	.\ltpoll.h	/^class lt_poll : public lt_poll_base {$/;"	c
+lt_poll_factory	.\ltpoll.h	/^class lt_poll_factory{$/;"	c
+ltpoll	.\ltpoll.cpp	/^ltpoll::ltpoll():pid_(0),$/;"	f	class:ltpoll
+ltpolldecode	.\ltpoll.cpp	/^ltpolldecode::ltpolldecode()$/;"	f	class:ltpolldecode
+ltpolldecode	.\ltpoll.h	/^class ltpolldecode{$/;"	c
+main_socket_loop_	.\comm.c	/^main_socket_loop_(void* udata){$/;"	f	file:
+make_queue_node	.\queue.c	/^make_queue_node(){$/;"	f	file:
+mask	.\ltpoll.h	/^	CallMask mask;$/;"	m	class:ltpolldecode
+msg_q	.\queue.c	/^static queue* msg_q = NULL;$/;"	v	file:
+net_add	.\poll.h	/^net_add(int epfd, int sockfd, void* ptr){$/;"	f
+net_del	.\poll.h	/^net_del(int epfd, int sockfd){$/;"	f
+net_init	.\poll.h	/^net_init(){$/;"	f
+net_wait	.\poll.h	/^net_wait(int epfd, node* retnode, int waitsize){$/;"	f
+next	.\queue.c	/^	node* next;$/;"	m	struct:queue_node_	file:
+node	.\comm.h	/^}node;$/;"	t	typeref:struct:data_node_
+node_call_	.\queue.c	/^static reg_release_callback node_call_ = NULL;$/;"	v	file:
+panic	.\comm.c	/^static int panic (lua_State* L) {$/;"	f	file:
+panic	.\ltpoll.cpp	/^static int panic (lua_State *L) {$/;"	f	file:
+pconfig	.\ltpoll.cpp	/^static const char* pconfig = "$/;"	v	file:
+poll_	.\comm.c	/^static Poll* poll_ = NULL;$/;"	v	file:
+pollfunc	.\ltpoll.cpp	/^ltpoll::pollfunc(const ValueType& config){$/;"	f	class:ltpoll
+queue	.\queue.c	/^}queue;$/;"	t	typeref:struct:queue_	file:
+queue_	.\queue.c	/^typedef struct queue_{$/;"	s	file:
+queue_init	.\queue.c	/^queue_init(){$/;"	f
+queue_insert	.\queue.c	/^queue_insert(node* nnode){$/;"	f
+queue_len	.\queue.c	/^queue_len(){$/;"	f
+queue_node	.\queue.c	/^}queue_node;$/;"	t	typeref:struct:queue_node_	file:
+queue_node_	.\queue.c	/^typedef struct queue_node_{$/;"	s	file:
+queue_pop	.\queue.c	/^queue_pop(){$/;"	f
+release_buf_queue	.\queue.c	/^release_buf_queue(){$/;"	f	file:
+release_queue	.\queue.c	/^release_queue(){$/;"	f
+release_queue_node	.\queue.c	/^release_queue_node(queue_node* p){$/;"	f	file:
+retcb_	.\ltpoll.h	/^	BeCb retcb_;$/;"	m	class:ltpolldecode
+server_addr	.\comm.c	/^	struct sockaddr_in server_addr;$/;"	m	struct:Poll_	typeref:struct:Poll_::sockaddr_in	file:
+session	.\comm.h	/^	int session;$/;"	m	struct:data_node_
+set_opt	.\comm.c	/^set_opt(lua_State* state){$/;"	f	file:
+set_release_node_call	.\queue.c	/^set_release_node_call(reg_release_callback cb){$/;"	f
+size	.\queue.c	/^	int size;$/;"	m	struct:queue_	file:
+state	.\comm.c	/^	lua_State* state;$/;"	m	struct:thread_	file:
+succeed_	.\comm.c	/^const char* succeed_ = "succeed";$/;"	v
+tail	.\queue.c	/^	queue_node_* tail;$/;"	m	struct:queue_	file:
+thread_	.\comm.c	/^typedef struct thread_{$/;"	s	file:
+thread_count_	.\comm.h	/^	int thread_count_;$/;"	m	struct:logi_Set_
+ud_	.\ltpoll.h	/^	UnionData<ValueType>* ud_;$/;"	m	class:ltpolldecode
+udata	.\comm.h	/^	void* udata;$/;"	m	struct:data_node_
+value_type	.\ltpoll.h	/^	typedef _Container::value_type value_type;$/;"	t	class:lt_poll
+worker	.\comm.c	/^}worker;$/;"	t	typeref:struct:thread_	file:
+worker_	.\comm.c	/^static worker* worker_ = NULL;$/;"	v	file:
+worker_loop_	.\comm.c	/^worker_loop_(node* nnode){$/;"	f	file:
+~ltpoll	.\ltpoll.cpp	/^ltpoll::~ltpoll(){$/;"	f	class:ltpoll
