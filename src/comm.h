@@ -41,11 +41,16 @@ typedef struct data_node_{
 typedef struct logi_Set_{
 	const char* call_func_name_;
 	const char* call_file_path_;
+	const char* worker_name_;
+	const char* worker_path_;
+	const char* global_value_;
 	const char* log_path_;
 	int thread_count_;
+	int port_;
+
 }lg_set;
 
+
 COMM_API const char* (init_poll)(const char* config_path_);
-COMM_API const char* (init_call)(lua_State* state);
 
 #endif

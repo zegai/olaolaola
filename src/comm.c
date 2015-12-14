@@ -14,6 +14,7 @@ typedef struct thread_{
 	int handle;
 	lua_State* state;
 	LockType lock_;
+	bool isbusy;
 }worker;
 
 static Poll* poll_ = NULL;
@@ -106,10 +107,26 @@ set_opt(lua_State* state){
 static void 
 init_control(lua_State* state){
 	lua_getglobal(state, "init_port");
+	lgset->port_ = lua_isnumber(state, -1) ? 2333 : lua_tonumber(state, -1);
+	lua_pop(state, 1);
+
 	lua_getglobal(state, "init_thread_count");
+	lgset->thread_count_ = lua_isnumber(state, -1) ? 4 : lua_tonumber(state, -1);
+	lua_pop(state, 1);
+
 	lua_getglobal(state, "init_work_path");
+	lgset->worker_path_ = lua_isstring(state, -1) ? "./lua/worker.lua" : lua_tostring(state, -1);
+	lua_pop(state, 1);
+
 	lua_getglobal(state, "init_work_func");
-	lua_getglobal(state, "global_value");
+	lgset->worker_path_ = lua_isstring(state, -1) ? "work" : lua_tostring(state, -1);
+	lua_pop(state, 1);
+
+	lua_getglobal(state, "init_log_path");
+	lgset->worker_path_ = lua_isstring(state, -1) ? "./log" : lua_tostring(state, -1);
+	lua_pop(state, 1);
+
+	//lua_getglobal(state, "global_value");
 
 }
 
@@ -169,12 +186,12 @@ init_worker_env(){
 	}
 
 	for(; handle < lgset->thread_count_ ; handle ++){
-		if( !worker_[handle]->state )
+		if( !worker_[handle].state )
 			break;
 	}
 
-	worker_[handle]->state = tmp_state;
-	worker_[handle]->handle = handle;
+	worker_[handle].state = tmp_state;
+	worker_[handle].handle = handle;
 
 	Lock( poll_->global_lock_ );
 
@@ -182,11 +199,24 @@ init_worker_env(){
 	lua_setglobal(tmp_state, "thread_");
 	int v = luaL_loadfile( tmp_state, lgset->call_file_path_ );
 	if( v != LUA_OK ){
-		printf("lua check err:%s\n", lua_tostring(state, -1));
+		printf("lua check err:%s\n", lua_tostring(tmp_state, -1));
 		return -1;
 	}
 	lua_pcall( tmp_state, 0, 0, 0 );
 	return handle;
+}
+
+static void
+release_worker_env(){
+	int t_count = lgset->thread_count_;
+	int i = 0;
+	for(;i < t_count; i++){
+		while( *(worker_ + i)->isbusy ){
+			sleep(10);
+		}
+		//save_data()
+		lua_close(*(worker_ + i)->state);
+	}
 }
 
 //main(int argc, char** argv)
@@ -196,7 +226,7 @@ init_worker_env(){
 //	create_thread()
 //main_socket_loop_()
 //return 0;
-lua_getref
+
 //block
 static void*
 main_socket_loop_(void* udata){
@@ -207,8 +237,12 @@ main_socket_loop_(void* udata){
 		loop_p->
 	}
 }
+
 //get a node do a step
 static int
-worker_loop_(node* nnode){
-
+worker_loop_(int handle, node* nnode){
+	assert( nnode && worker_);
+	//thread struct
+	worker* work_handle = worker_[handle];
+	
 }
