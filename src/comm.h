@@ -19,7 +19,9 @@
 
 #else
 
-
+#define Lock(p)
+#define UnLock(p) 
+#define LockType unsigned
 
 #endif
 
@@ -51,6 +53,7 @@ typedef struct logi_Set_{
 }lg_set;
 
 
-COMM_API const char* (init_poll)(const char* config_path_);
-
+COMM_API const char* (init_poll_env)(const char* config_path_);
+COMM_API int (init_worker_env)();
+COMM_API void (release_worker_env)();
 #endif

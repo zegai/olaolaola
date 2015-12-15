@@ -179,9 +179,8 @@ init_worker_env(){
 	printf("create thread state:%s\n", init_lua_S(tmp_state));
 	assert( lgset );
 	int handle = 0;
-	Lock( poll_->global_lock_ );
+
 	if( worker_[lgset->thread_count_ - 1]->state ){
-		UnLock( poll_->global_lock_ );
 		return -1;
 	}
 
@@ -192,8 +191,6 @@ init_worker_env(){
 
 	worker_[handle].state = tmp_state;
 	worker_[handle].handle = handle;
-
-	Lock( poll_->global_lock_ );
 
 	lua_pushinteger(tmp_state, handle);
 	lua_setglobal(tmp_state, "thread_");
@@ -233,9 +230,6 @@ main_socket_loop_(void* udata){
 	CHECK(poll_, "POLL ENV NEED INIT")
 	Poll* loop_p = poll_;
 	
-	for (;;){
-		loop_p->
-	}
 }
 
 //get a node do a step

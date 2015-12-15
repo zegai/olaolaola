@@ -17,12 +17,6 @@ typedef struct queue_{
 
 static queue* msg_q = NULL;
 static queue* buf_q = NULL;
-static reg_release_callback node_call_ = NULL;
-
-OPENAPI void 
-set_release_node_call(reg_release_callback cb){
-	node_call_ = cb;
-}
 
 
 OPENAPI queue* 
