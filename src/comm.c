@@ -1,6 +1,9 @@
 #include "comm.h"
 #include "queue.h"
 #include "poll.h"
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
 #define LUACFUNC
 
 typedef struct Poll_{
@@ -14,7 +17,7 @@ typedef struct thread_{
 	int handle;
 	lua_State* state;
 	LockType lock_;
-	bool isbusy;
+	int isbusy;
 }worker;
 
 static Poll* poll_ = NULL;
@@ -57,13 +60,32 @@ init_lua_S(lua_State* state){
 	return "create lua state succeed.";
 }
 
+
+inline static void*  
+check_udata(lua_State* state, const char* name){
+	lua_getglobal(state, name);
+	assert( lua_isnil(state, -1) );
+	void* poll_S_ = luaL_checkudata(state, 1, name);
+	lua_pop(state, 1);
+	return poll_S_;
+}
+
+static int 
+set_opt(lua_State* state){
+	Poll* poll_s = (Poll*)check_udata(state, "poll_handle");
+	int value = 1;
+	setsockopt(poll_s->fd, SOL_SOCKET, SO_REUSEADDR, &value, sizeof(int));
+	setsockopt(poll_s->fd, IPPROTO_TCP, TCP_NODELAY, &value, sizeof(int));
+	return 1;
+}
+
 static void 
 init_poll_struct(lua_State* state){
 	
 	assert( poll_ == NULL );
 	poll_ = (Poll *)malloc(sizeof(Poll));
 
-	CHECK_MEM(poll_)
+	CHECK_MEM(poll_);
 	lua_getglobal(state, "poll_handle");
 	assert(lua_isnil(state, -1));
 	lua_pop(state, -1);
@@ -80,29 +102,14 @@ init_poll_struct(lua_State* state){
 	int flg = fcntl(fd, F_GETFL, 0);
 	fcntl(fd, F_SETFL, flg | O_NONBLOCK);
 
-	poll_->server_addr.elfd = fd;
+	poll_->elfd = fd;
 
 	fd = socket(AF_INET, SOCK_STREAM, 0);
 
 	set_opt(state);
 }
 
-inline static void*  
-check_udata(lua_State* state, const char* name){
-	lua_getglobal(state, name);
-	assert( lua_isnil(state, -1) != NULL );
-	void* poll_S_ = luaL_checkudata(state, 1);
-	lua_pop(state, 1);
-	return poll_S_;
-}
 
-static int 
-set_opt(lua_State* state){
-	Poll* poll_s = (Poll*)check_udata(state);
-	int value = 1;
-	setsockopt(s->fd, SOL_SOCKET, SO_REUSEADDR, &value, sizeof(int));
-	setsockopt(s->fd, IPPROTO_TCP, TCP_NODELAY, &value, sizeof(int));
-}
 
 static void 
 init_control(lua_State* state){
@@ -142,8 +149,8 @@ init_poll_env(const char* config_){
 	if(p == NULL)
 		return create_poll_err_;
 	assert( lgset );
-	lgset = (logi_Set_*)malloc(sizeof(logi_Set_));
-	CHECK_MEM(lgset)
+	lgset = (lg_set*)malloc(sizeof(lg_set));
+	CHECK_MEM(lgset);
 	lgset->call_func_name_ = "main";
 	lgset->call_file_path_ = "./lua/main.lua";
 	lgset->thread_count_ = 4;
@@ -157,7 +164,7 @@ init_poll_env(const char* config_){
 
 	if( lgset->thread_count_ ){
 		worker_ = (worker*)malloc(sizeof(worker)*lgset->thread_count_);
-		CHECK_MEM(worker_)
+		CHECK_MEM(worker_);
 		if(!worker_)
 			return create_poll_err_;
 		memset(worker_, 0, sizeof(worker)*lgset->thread_count_);
@@ -172,7 +179,7 @@ get_lgset(){
 }
 
 //return thread count 
-static int
+int
 init_worker_env(){
 	int t_count = lgset->thread_count_;
 	lua_State* tmp_state = NULL;
@@ -180,7 +187,7 @@ init_worker_env(){
 	assert( lgset );
 	int handle = 0;
 
-	if( worker_[lgset->thread_count_ - 1]->state ){
+	if( worker_[lgset->thread_count_ - 1].state ){
 		return -1;
 	}
 
@@ -203,16 +210,16 @@ init_worker_env(){
 	return handle;
 }
 
-static void
+void
 release_worker_env(){
 	int t_count = lgset->thread_count_;
 	int i = 0;
 	for(;i < t_count; i++){
-		while( *(worker_ + i)->isbusy ){
+		while( worker_[i].isbusy ){
 			sleep(10);
 		}
 		//save_data()
-		lua_close(*(worker_ + i)->state);
+		lua_close(worker_[i].state);
 	}
 }
 
@@ -227,8 +234,8 @@ release_worker_env(){
 //block
 static void*
 main_socket_loop_(void* udata){
-	CHECK(poll_, "POLL ENV NEED INIT")
-	Poll* loop_p = poll_;
+	//CHECK(poll_, "POLL ENV NEED INIT")
+	//Poll* loop_p = poll_;
 	
 }
 
@@ -237,6 +244,6 @@ static int
 worker_loop_(int handle, node* nnode){
 	assert( nnode && worker_);
 	//thread struct
-	worker* work_handle = worker_[handle];
+	//worker* work_handle = worker_[handle];
 	
 }

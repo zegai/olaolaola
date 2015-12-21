@@ -1,15 +1,16 @@
+#include "comm.h"
 #include "queue.h"
-
+#include <string.h>
 #define OPENAPI
 
 typedef struct queue_node_{
 	node* data;
-	node* next;
+	struct queue_node_* next;
 }queue_node;
 
 typedef struct queue_{
-	queue_node_* head;
-	queue_node_* tail;
+	queue_node* head;
+	queue_node* tail;
 	int size;
 	LockType lock_;
 }queue;
@@ -19,16 +20,14 @@ static queue* msg_q = NULL;
 static queue* buf_q = NULL;
 
 
-OPENAPI queue* 
+OPENAPI void 
 queue_init(){
 	assert( msg_q == NULL );
 	msg_q = (queue *)malloc(sizeof(queue));
 	buf_q = (queue *)malloc(sizeof(queue));
-	CHECK_MEM(msg_q && buf_q)
+	CHECK_MEM(msg_q && buf_q);
 	memset(msg_q, 0, sizeof(queue));
 	memset(buf_q, 0, sizeof(queue));
-	
-	return msg_q;
 }
 
 static queue_node*
@@ -43,7 +42,7 @@ make_queue_node(queue* mqueue_){
 		return p;
 	}
 	p = (queue_node*)malloc(sizeof(queue_node));
-	CHECK_MEM(p)
+	CHECK_MEM(p);
 	return p;
 }
 
@@ -58,7 +57,8 @@ release_queue_node(queue* mqueue_, queue_node* p){
 		free( p );
 		return r;
 	}
-	p->data = p->next = NULL;
+	p->data = NULL;
+	p->next = NULL;
 	if( !mqueue_->head ){
 		mqueue_->head = p;
 	}
@@ -123,7 +123,7 @@ release_buf_queue(){
 	int i = 0;
 	int size = buf_q->size;
 	for(; i < size ; i++){
-		free(make_queue_node());
+		free(make_queue_node(msg_q));
 	}
 
 }
@@ -133,7 +133,7 @@ release_queue(){
 	assert( msg_q && buf_q );
 	node* p = queue_pop();
 	while( p ){
-		node_call_(p);
+		//node_call_(p);
 		p = queue_pop();
 	}
 	release_buf_queue();

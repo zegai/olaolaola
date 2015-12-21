@@ -1,6 +1,8 @@
 #ifndef _COMM_H_
 #define _COMM_H_
-
+#include <stdlib.h>
+#include <stdio.h>
+#include <assert.h>
 #ifdef WIN32
 
 #define LockType CRITICAL_SECTION
@@ -25,8 +27,12 @@
 
 #endif
 
-#define CHECK(p, str) {if(!p) printf("check err: %s \n", str);}
-#define CHECK_MEM(p) CHECK(p, "OUT MEMMORY")
+#define Lock(p)
+#define UnLock(p) 
+#define LockType unsigned
+
+#define Check(p, str) if(!(p)){printf(str);}
+#define CHECK_MEM(p) Check(p,"OUT MEMMORY\n")
 
 #define comm_u32 unsigned
 #define COMM_API
