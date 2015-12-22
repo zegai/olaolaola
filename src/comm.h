@@ -38,7 +38,12 @@
 #define COMM_API
 #define MAX_BUF_Q 1024
 
-
+typedef struct Poll_{
+	comm_u32  fd;
+	comm_u32  elfd;
+	struct sockaddr_in server_addr;
+	LockType global_lock_;
+}Poll;
 
 typedef struct data_node_{
 	void* udata;

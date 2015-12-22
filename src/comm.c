@@ -6,13 +6,6 @@
 #include "lauxlib.h"
 #define LUACFUNC
 
-typedef struct Poll_{
-	comm_u32  fd;
-	comm_u32  elfd;
-	struct sockaddr_in server_addr;
-	LockType global_lock_;
-}Poll;
-
 typedef struct thread_{
 	int handle;
 	lua_State* state;
@@ -48,24 +41,28 @@ static int panic (lua_State* L) {
 	return 0;  /* return to Lua to abort */
 }
 
-static const char*
+lua_State*
 init_lua_S(lua_State* state){
 	assert(state == NULL);
 	state = lua_newstate(l_alloc, NULL);
 	if(!state){
-		return init_lua_err_;
+		printf("ERR WHEN CREATE NEW STATE");
+		return NULL;
 	}
+	printf("STATE : %X\n", state);
 	lua_atpanic(state, &panic);
 	luaL_openlibs(state);
-	return "create lua state succeed.";
+	return state;
 }
 
 
 inline static void*  
 check_udata(lua_State* state, const char* name){
 	lua_getglobal(state, name);
-	assert( lua_isnil(state, -1) );
-	void* poll_S_ = luaL_checkudata(state, 1, name);
+	//assert( lua_isnil(state, -1) );
+	void *poll_S_ = NULL;
+	if( lua_islightuserdata( state, -1 ) )
+		poll_S_ = lua_touserdata(state, -1);
 	lua_pop(state, 1);
 	return poll_S_;
 }
@@ -140,15 +137,15 @@ init_control(lua_State* state){
 const const char* 
 init_poll_env(const char* config_){
 	lua_State* state = NULL;
-	if(init_lua_S(state) == init_lua_err_)
+	state = init_lua_S(state);
+	if(!state)
 		return create_poll_err_;
-
 	assert(state);
 	init_poll_struct(state);
 	void* p = check_udata(state, "poll_handle");
 	if(p == NULL)
 		return create_poll_err_;
-	assert( lgset );
+	assert( lgset == NULL );
 	lgset = (lg_set*)malloc(sizeof(lg_set));
 	CHECK_MEM(lgset);
 	lgset->call_func_name_ = "main";
@@ -236,7 +233,6 @@ static void*
 main_socket_loop_(void* udata){
 	//CHECK(poll_, "POLL ENV NEED INIT")
 	//Poll* loop_p = poll_;
-	
 }
 
 //get a node do a step
