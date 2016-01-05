@@ -47,8 +47,10 @@ typedef struct Poll_{
 
 typedef struct data_node_{
 	void* udata;
-	int session;
-	unsigned char data_type;
+	union val{
+		int session;
+		unsigned char data_type;
+	};
 }node;
 
 typedef struct logi_Set_{

@@ -3,31 +3,30 @@
 #include <string.h>
 #define OPENAPI
 
-typedef struct queue_node_{
-	node* data;
-	struct queue_node_* next;
-}queue_node;
-
-typedef struct queue_{
-	queue_node* head;
-	queue_node* tail;
-	int size;
-	LockType lock_;
-}queue;
 
 
-static queue* msg_q = NULL;
-static queue* buf_q = NULL;
+
+static queue* g_msg_q = NULL;
+static queue* g_buf_q = NULL;
 
 
 OPENAPI void 
+global_queue_init(){
+	assert( g_msg_q == NULL );
+	g_msg_q = (queue *)malloc(sizeof(queue));
+	g_buf_q = (queue *)malloc(sizeof(queue));
+	CHECK_MEM(g_msg_q && g_buf_q);
+	memset(g_msg_q, 0, sizeof(queue));
+	memset(g_buf_q, 0, sizeof(queue));
+}
+
+queue*
 queue_init(){
-	assert( msg_q == NULL );
-	msg_q = (queue *)malloc(sizeof(queue));
-	buf_q = (queue *)malloc(sizeof(queue));
-	CHECK_MEM(msg_q && buf_q);
-	memset(msg_q, 0, sizeof(queue));
-	memset(buf_q, 0, sizeof(queue));
+	queue* q_ = NULL;
+	q_ = (queue *)malloc(sizeof(queue));
+	CHECK_MEM(q_);
+	memset(q_, 0, sizeof(queue));
+	return q_;
 }
 
 static queue_node*
@@ -45,8 +44,6 @@ make_queue_node(queue* mqueue_){
 	CHECK_MEM(p);
 	return p;
 }
-
-
 
 static node*
 release_queue_node(queue* mqueue_, queue_node* p){
@@ -74,11 +71,8 @@ release_queue_node(queue* mqueue_, queue_node* p){
 	return p->data;
 }
 
-
 OPENAPI void
-queue_insert(node* nnode){
-	assert( msg_q );
-	queue* mqueue_ = msg_q;
+queue_push(queue* mqueue_, node* nnode){
 
 	Lock( mqueue_->lock_ );
 	queue_node *p = make_queue_node(mqueue_);
@@ -97,11 +91,10 @@ queue_insert(node* nnode){
 }
 
 OPENAPI node*
-queue_pop(){
-	assert( msg_q );
+queue_pop(queue* mqueue_){
+	assert( mqueue_ );
 	node* p = NULL;
-	queue* mqueue_ = msg_q;
-	queue* bqueue_ = buf_q;
+	queue* bqueue_ = g_buf_q;
 	Lock( mqueue_->lock_ );
 	if( mqueue_->head ){
 		queue_node* q = mqueue_->head;
@@ -114,34 +107,46 @@ queue_pop(){
 
 OPENAPI int 
 queue_len(){
-	return msg_q->size;
+	return g_msg_q->size;
 }
 
 static void
 release_buf_queue(){
-	assert( buf_q );
+	assert( g_buf_q );
 	int i = 0;
-	int size = buf_q->size;
+	int size = g_buf_q->size;
 	for(; i < size ; i++){
-		free(make_queue_node(msg_q));
+		free(make_queue_node(g_buf_q));
 	}
 
 }
 
 OPENAPI void
-release_queue(){
-	assert( msg_q && buf_q );
+release_queue(queue* msg_q){
+	assert( msg_q );
 	node* p = queue_pop();
 	while( p ){
-		//node_call_(p);
-		p = queue_pop();
+		free(p->udata);
+		free(p);
+		p = queue_pop(msg_q);
 	}
-	release_buf_queue();
 
 	free(msg_q);
-	free(buf_q);
-
 }
 
+OPENAPI void
+global_release_queue(){
+	release_queue(g_msg_q);
+}
 
+OPENAPI node*
+global_queue_pop(){
+	return queue_pop(g_msg_q);
+}
 
+OPENAPI void
+global_queue_push(node* nnode){
+	assert( g_msg_q );
+	queue* mqueue_ = g_msg_q;
+	queue_push(mqueue_, nnode);
+}

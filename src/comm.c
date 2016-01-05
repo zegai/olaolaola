@@ -111,23 +111,23 @@ init_poll_struct(lua_State* state){
 static void 
 init_control(lua_State* state){
 	lua_getglobal(state, "init_port");
-	lgset->port_ = lua_isnumber(state, -1) ? 2333 : lua_tonumber(state, -1);
+	lgset->port_ = lua_isnumber(state, -1) ? lua_tonumber(state, -1) : 2333;
 	lua_pop(state, 1);
 
 	lua_getglobal(state, "init_thread_count");
-	lgset->thread_count_ = lua_isnumber(state, -1) ? 4 : lua_tonumber(state, -1);
+	lgset->thread_count_ = lua_isnumber(state, -1) ? lua_tonumber(state, -1) : 4;
 	lua_pop(state, 1);
 
 	lua_getglobal(state, "init_work_path");
-	lgset->worker_path_ = lua_isstring(state, -1) ? "./lua/worker.lua" : lua_tostring(state, -1);
+	lgset->worker_path_ = lua_isstring(state, -1) ? lua_tostring(state, -1) : "./lua/worker.lua";
 	lua_pop(state, 1);
 
 	lua_getglobal(state, "init_work_func");
-	lgset->worker_path_ = lua_isstring(state, -1) ? "work" : lua_tostring(state, -1);
+	lgset->worker_path_ = lua_isstring(state, -1) ? lua_tostring(state, -1) : "work" ;
 	lua_pop(state, 1);
 
 	lua_getglobal(state, "init_log_path");
-	lgset->worker_path_ = lua_isstring(state, -1) ? "./log" : lua_tostring(state, -1);
+	lgset->worker_path_ = lua_isstring(state, -1) ? lua_tostring(state, -1) : "./log";
 	lua_pop(state, 1);
 
 	//lua_getglobal(state, "global_value");
@@ -229,17 +229,3 @@ release_worker_env(){
 //return 0;
 
 //block
-static void*
-main_socket_loop_(void* udata){
-	//CHECK(poll_, "POLL ENV NEED INIT")
-	//Poll* loop_p = poll_;
-}
-
-//get a node do a step
-static int
-worker_loop_(int handle, node* nnode){
-	assert( nnode && worker_);
-	//thread struct
-	//worker* work_handle = worker_[handle];
-	
-}

@@ -2,14 +2,21 @@
 #include "comm.h"
 
 int 
-sock_bind(){
-
+sock_create(){
+	return socket(AF_UNIX, SOCK_STREAM, 0);
 }
 
 int 
-sock_listen(){
-
+sock_bind(int sockfd, struct sockaddr_in* addr){
+	assert( sockfd && addr );
+	return bind(sockfd, (struct sockaddr *)addr, sizeof(struct sockaddr_in));
 }
+
+int 
+sock_listen(int sockfd){
+	return listen(sockfd, LISTEN_BACKLOG);
+}
+
 
 int 
 sock_send(){
