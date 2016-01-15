@@ -3,11 +3,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-#ifdef WIN32
 
+#ifdef WIN32
 #define LockType CRITICAL_SECTION
 #define InitSpinLock(p, count) InitializeCriticalSectionAndSpinCount(&p , count)  
 #define InitLock(p) InitializeCriticalSection(&p)
+
 #ifdef NEED_LOCK
 #define Lock(p) EnterCriticalSection(&p)
 #define UnLock(p) LeaveCriticalSection(&p)
@@ -15,16 +16,19 @@
 #define Lock(p) 
 #define UnLock(p) 
 #endif
+
 #define AtomInc(p) ::InterlockedIncrement(&p) //p++ AtomInc(p)
 #define AtomDec(p) ::InterlockedDecrement(&p) //p--	AtomDec(p)
 #define AtomExc(p, count) ::InterlockedExchangeAdd(&p, count) // p += count AtomExc(p, count)
+#define AtomCas()
 
 #else
 
 #define Lock(p)
 #define UnLock(p) 
 #define LockType unsigned
-
+#define AtomCas(ptr, oldval, newval) __sync_bool_compare_and_swap(ptr, oldval, newval)
+#define AtomCasv(ptr, oldval, newval) __sync_val_compare_and_swap(ptr, oldval, newval)
 #endif
 
 #define Lock(p)
@@ -43,6 +47,7 @@ typedef struct Poll_{
 	comm_u32  elfd;
 	struct sockaddr_in server_addr;
 	LockType global_lock_;
+	int quit_flg;
 }Poll;
 
 typedef struct data_node_{
@@ -60,8 +65,10 @@ typedef struct logi_Set_{
 	const char* worker_path_;
 	const char* global_value_;
 	const char* log_path_;
+	int io_thread_count_;
 	int thread_count_;
 	int port_;
+	int Mtu_;
 
 }lg_set;
 

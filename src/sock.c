@@ -17,6 +17,10 @@ sock_listen(int sockfd){
 	return listen(sockfd, LISTEN_BACKLOG);
 }
 
+int 
+sock_accept(){
+
+}
 
 int 
 sock_send(){

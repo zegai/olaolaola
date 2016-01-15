@@ -130,6 +130,10 @@ init_control(lua_State* state){
 	lgset->worker_path_ = lua_isstring(state, -1) ? lua_tostring(state, -1) : "./log";
 	lua_pop(state, 1);
 
+	lua_getglobal(state, "init_io_thread_count");
+	lgset->io_thread_count_ = lua_isstring(state, -1) ? lua_tostring(state, -1) : 2;
+	lua_pop(state, 1);
+
 	//lua_getglobal(state, "global_value");
 
 }

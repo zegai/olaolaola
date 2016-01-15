@@ -5,20 +5,7 @@
 
 
 
-
 static queue* g_msg_q = NULL;
-static queue* g_buf_q = NULL;
-
-
-OPENAPI void 
-global_queue_init(){
-	assert( g_msg_q == NULL );
-	g_msg_q = (queue *)malloc(sizeof(queue));
-	g_buf_q = (queue *)malloc(sizeof(queue));
-	CHECK_MEM(g_msg_q && g_buf_q);
-	memset(g_msg_q, 0, sizeof(queue));
-	memset(g_buf_q, 0, sizeof(queue));
-}
 
 queue*
 queue_init(){
@@ -26,7 +13,15 @@ queue_init(){
 	q_ = (queue *)malloc(sizeof(queue));
 	CHECK_MEM(q_);
 	memset(q_, 0, sizeof(queue));
+	q_->tmp_queue_ = (queue_ *)malloc(sizeof(queue));
+	CHECK_MEM( q_->tmp_queue_ );
 	return q_;
+}
+
+OPENAPI void 
+global_queue_init(){
+	assert( g_msg_q == NULL );
+	g_msg_q = queue_init();
 }
 
 static queue_node*
@@ -74,8 +69,8 @@ release_queue_node(queue* mqueue_, queue_node* p){
 OPENAPI void
 queue_push(queue* mqueue_, node* nnode){
 
-	Lock( mqueue_->lock_ );
-	queue_node *p = make_queue_node(mqueue_);
+	
+	queue_node *p = make_queue_node(mqueue_->tmp_queue_);
 	if( !mqueue_->head ){
 		mqueue_->head = p;
 	}
@@ -87,19 +82,18 @@ queue_push(queue* mqueue_, node* nnode){
 		mqueue_->tail->next = p;
 		mqueue_->tail = p;
 	}
-	UnLock(mqueue_->lock_);
+	
 }
 
 OPENAPI node*
 queue_pop(queue* mqueue_){
 	assert( mqueue_ );
 	node* p = NULL;
-	queue* bqueue_ = g_buf_q;
-	Lock( mqueue_->lock_ );
+	
 	if( mqueue_->head ){
 		queue_node* q = mqueue_->head;
 		mqueue_->head = q->next;
-		p = release_queue_node(bqueue_, q);
+		p = release_queue_node(mqueue_->tmp_queue_, q);
 	}
 	UnLock( mqueue_->lock_ );
 	return p;
@@ -111,12 +105,12 @@ queue_len(){
 }
 
 static void
-release_buf_queue(){
-	assert( g_buf_q );
+release_buf_queue(queue_* mqueue_){
+	
 	int i = 0;
-	int size = g_buf_q->size;
+	int size = mqueue_->tmp_queue_->size;
 	for(; i < size ; i++){
-		free(make_queue_node(g_buf_q));
+		free(make_queue_node(mqueue_->tmp_queue_));
 	}
 
 }
@@ -141,12 +135,38 @@ global_release_queue(){
 
 OPENAPI node*
 global_queue_pop(){
-	return queue_pop(g_msg_q);
+	Lock( g_msg_q->lock_ );
+	node* p = queue_pop(g_msg_q);
+	UnLock( g_msg_q->lock_ );
+	return p;
 }
 
 OPENAPI void
 global_queue_push(node* nnode){
 	assert( g_msg_q );
 	queue* mqueue_ = g_msg_q;
+	Lock( mqueue_->lock_ );
 	queue_push(mqueue_, nnode);
+	UnLock(mqueue_->lock_);
 }
+
+OPENAPI void 
+lock_queue_push(queue* msg_q, node* nnode){
+	assert( msg_q && nnode );
+	queue* mqueue_ = msg_q;
+	Lock( mqueue_->lock_ );
+	queue_push(mqueue_, nnode);
+	UnLock(mqueue_->lock_);
+}
+
+OPENAPI node* 
+lock_queue_pop(queue* msg_q){
+	Lock( msg_q->lock_ );
+	node* p = queue_pop(msg_q);
+	UnLock( msg_q->lock_ );
+	return p;
+}
+
+
+
+

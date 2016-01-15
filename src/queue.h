@@ -11,6 +11,7 @@ typedef struct queue_node_{
 typedef struct queue_{
 	queue_node* head;
 	queue_node* tail;
+	struct queue_* tmp_queue_;	//buf queue
 	int size;
 	LockType lock_;
 }queue;
