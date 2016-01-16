@@ -21,7 +21,6 @@ net_init(){
 
 static int 
 net_add(int epfd, int sockfd, void* ptr){
-	Check(ptr,"GET NULL PTR");
 	struct epoll_event ev;
 	ev.events = EPOLLIN;
 	ev.data.ptr = ptr;

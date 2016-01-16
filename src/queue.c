@@ -69,7 +69,6 @@ release_queue_node(queue* mqueue_, queue_node* p){
 OPENAPI void
 queue_push(queue* mqueue_, node* nnode){
 
-	
 	queue_node *p = make_queue_node(mqueue_->tmp_queue_);
 	if( !mqueue_->head ){
 		mqueue_->head = p;
@@ -95,7 +94,6 @@ queue_pop(queue* mqueue_){
 		mqueue_->head = q->next;
 		p = release_queue_node(mqueue_->tmp_queue_, q);
 	}
-	UnLock( mqueue_->lock_ );
 	return p;
 }
 

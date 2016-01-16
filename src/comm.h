@@ -9,13 +9,8 @@
 #define InitSpinLock(p, count) InitializeCriticalSectionAndSpinCount(&p , count)  
 #define InitLock(p) InitializeCriticalSection(&p)
 
-#ifdef NEED_LOCK
 #define Lock(p) EnterCriticalSection(&p)
 #define UnLock(p) LeaveCriticalSection(&p)
-#else
-#define Lock(p) 
-#define UnLock(p) 
-#endif
 
 #define AtomInc(p) ::InterlockedIncrement(&p) //p++ AtomInc(p)
 #define AtomDec(p) ::InterlockedDecrement(&p) //p--	AtomDec(p)
@@ -42,6 +37,10 @@
 #define COMM_API
 #define MAX_BUF_Q 1024
 
+#define SOCK_ACCEPT 	1
+#define SOCK_WRITE		2
+#define SOCK_READ		3
+
 typedef struct Poll_{
 	comm_u32  fd;
 	comm_u32  elfd;
@@ -54,8 +53,8 @@ typedef struct data_node_{
 	void* udata;
 	union val{
 		int session;
-		unsigned char data_type;
 	};
+	unsigned char data_type;
 }node;
 
 typedef struct logi_Set_{

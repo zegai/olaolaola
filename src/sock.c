@@ -17,17 +17,18 @@ sock_listen(int sockfd){
 	return listen(sockfd, LISTEN_BACKLOG);
 }
 
-int 
-sock_accept(){
-
+inline int 
+sock_accept(int listenfd, struct sockaddr * addr){
+	socklen_t socklen = sizeof(struct sockaddr_in);
+	return accept(listenfd, addr, &socklen);
 }
 
-int 
+inline int 
 sock_send(){
 
 }
 
-int 
+inline int 
 sock_recv(){
 
 }

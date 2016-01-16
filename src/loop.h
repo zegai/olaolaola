@@ -7,5 +7,4 @@ typedef struct iohandle_{
 	queue* msg_q_;
 }iohandle;
 
-
 #endif
