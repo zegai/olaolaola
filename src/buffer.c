@@ -61,7 +61,8 @@ buf_create_small(buffer_queue* queue_, int size){
 		}
 	}
 	node* nnode = (node* )(small_pos - MAX_SBUF*small_count );
-	nnode->val.session = size;
+	nnode->val.bufinfo.size = size;
+	nnode->val.bufinfo.cursize = 0;
 	nnode->udata = nnode + sizeof(nnode);
 	return nnode;
 }
@@ -74,7 +75,8 @@ buf_create_middle(buffer_queue* queue_, int size){
 		Check(-1, "out of buf");
 	}
 	node* nnode = (node* )( middle_pos );
-	nnode->val.session = size;
+	nnode->val.bufinfo.size = size;
+	nnode->val.bufinfo.cursize = 0;
 	nnode->udata = nnode + sizeof(node);
 	return nnode;
 }
@@ -83,7 +85,8 @@ static node*
 buf_create_big(buffer_queue* queue_, int size){
 	node* nnode = (node *)( big_pos );
 	big_pos += sizeof(node) + size;
-	nnode->val.session = size;
+	nnode->val.bufinfo.size = size;
+	nnode->val.bufinfo.cursize = 0;
 	nnode->udata = nnode + sizeof(node);
 	return nnode;
 }
@@ -92,7 +95,8 @@ static node*
 buf_create_max(int size){
 	nnode* nnode = (nnode *)malloc(sizeof(nnode + size));
 	CHECK_MEM(nnode);
-	nnode->val.session = size;
+	nnode->val.bufinfo.size = size;
+	nnode->val.bufinfo.cursize = 0;
 	nnode->udata = nnode + sizeof(node);
 	return nnode;
 }
@@ -104,7 +108,7 @@ buf_new( buffer_queue* queue_, int size ){
 	if( !(fullsize >> SMALL_BUF)){
 		if( queue_->full_buf->size ){
 			node* buf_ = queue_pop(queue_->s_q);
-			buf_->val.session = size;
+			buf_->val.bufinfo.cursize = 0;
 			return buf_;
 		}else{
 			return buf_create_small(queue_, size);
@@ -113,7 +117,7 @@ buf_new( buffer_queue* queue_, int size ){
 	else if( !(fullsize >> MIDDLE_BUF) ){
 		if ( queue_->full_buf->size ){
 			node* buf_ = queue_pop(queue_->m_q);
-			buf_->val.session = size;
+			buf_->val.bufinfo.cursize = 0;
 			return buf_;
 		}else{
 			return buf_create_middle(queue_, size);
@@ -122,7 +126,7 @@ buf_new( buffer_queue* queue_, int size ){
 	else if( !(fullsize >> BIG_BUF) ){
 		if ( queue_->big_buf->size ){
 			node* buf_ = queue_pop(queue_->b_q);
-			buf_->val.session = size;
+			buf_->val.bufinfo.cursize = 0;
 			return buf_;
 		}else{
 			return buf_create_big(queue_, size);
@@ -134,7 +138,8 @@ buf_new( buffer_queue* queue_, int size ){
 
 void
 buf_release(buffer_queue* queue_, node* nnode){
-	int size = nnode->val.session;
+	int size = nnode->val.bufinfo.size;
+	nnode->val.bufinfo.cursize = 0;
 	queue* push_q = NULL;
 	if( !(size >> SMALL_BUF) ){
 		push_q = queue_->s_q;
@@ -153,6 +158,18 @@ buf_release(buffer_queue* queue_, node* nnode){
 
 }
 
+node* 
+buf_reverse(buffer_queue* bq_, node* curnode, int size){
+	node* p = buf_new(bq_, size);
+	memcmp( curnode->udata, p->udata, size );
+	p->val.bufinfo.cursize = size;
+	buf_release(bq_, curnode);
+	return p;
+}
 
+int 
+buffer_check(buffer_queue* bq_){
+	
+}
 
 

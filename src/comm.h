@@ -49,12 +49,20 @@ typedef struct Poll_{
 	int quit_flg;
 }Poll;
 
+struct bufinfo
+{
+	buffer_queue* bq;
+	int size;
+	int cursize;
+};
+
 typedef struct data_node_{
-	void* udata;
 	union val{
 		int session;
+		struct bufinfo info;
 	};
-	unsigned char data_type;
+	int data_type;
+	void* udata;
 }node;
 
 typedef struct logi_Set_{
