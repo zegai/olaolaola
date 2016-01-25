@@ -57,11 +57,10 @@ struct bufinfo
 };
 
 typedef struct data_node_{
-	union val{
-		int session;
-		struct bufinfo info;
-	};
-	int data_type;
+	int session;
+	struct bufinfo info;
+	short data_type;
+	short data_value;
 	void* udata;
 }node;
 
