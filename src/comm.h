@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-
+#include <netinet/in.h>
 #ifdef WIN32
 #define LockType CRITICAL_SECTION
 #define InitSpinLock(p, count) InitializeCriticalSectionAndSpinCount(&p , count)  
@@ -22,6 +22,8 @@
 #define Lock(p)
 #define UnLock(p) 
 #define LockType unsigned
+#define AtomInc(ptr) __sync_add_and_fetch(&ptr, 1)
+#define AtomExc(ptr, count) __sync_add_and_fetch(&ptr, count)
 #define AtomCas(ptr, oldval, newval) __sync_bool_compare_and_swap(ptr, oldval, newval)
 #define AtomCasv(ptr, oldval, newval) __sync_val_compare_and_swap(ptr, oldval, newval)
 #endif
@@ -38,8 +40,11 @@
 #define MAX_BUF_Q 1024
 
 #define SOCK_ACCEPT 	1
-#define SOCK_WRITE		2
-#define SOCK_READ		3
+#define SOCK_READ	2
+#define SOCK_WRITE	3
+#define SOCK_RBUF	4
+#define SOCK_REACCEPT	5
+#define SOCK_CLOSE	6
 
 typedef struct Poll_{
 	comm_u32  fd;
@@ -51,7 +56,7 @@ typedef struct Poll_{
 
 struct bufinfo
 {
-	buffer_queue* bq;
+	void* bq;
 	int size;
 	int cursize;
 };

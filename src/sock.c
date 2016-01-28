@@ -1,5 +1,5 @@
 #include "sock.h"
-#include "comm.h"
+
 
 int 
 sock_create(){
@@ -14,10 +14,10 @@ sock_bind(int sockfd, struct sockaddr_in* addr){
 
 int 
 sock_listen(int sockfd){
-	return listen(sockfd, LISTEN_BACKLOG);
+	return listen(sockfd, 0);
 }
 
-inline int 
+int 
 sock_accept(int listenfd, struct sockaddr * addr){
 	socklen_t socklen = sizeof(struct sockaddr_in);
 	return accept(listenfd, addr, &socklen);

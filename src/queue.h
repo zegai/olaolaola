@@ -24,5 +24,6 @@ void (release_queue)();
 void (global_queue_init)();
 void (global_queue_push)(node* nnode);
 node* (global_queue_pop)();
-
+void (lock_queue_push)(queue* msg_q, node* nnode);
+node* (lock_queue_pop)(queue* msg_q);
 #endif

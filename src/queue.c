@@ -13,7 +13,7 @@ queue_init(){
 	q_ = (queue *)malloc(sizeof(queue));
 	CHECK_MEM(q_);
 	memset(q_, 0, sizeof(queue));
-	q_->tmp_queue_ = (queue_ *)malloc(sizeof(queue));
+	q_->tmp_queue_ = (queue*)malloc(sizeof(queue));
 	CHECK_MEM( q_->tmp_queue_ );
 	return q_;
 }
@@ -103,7 +103,7 @@ queue_len(){
 }
 
 static void
-release_buf_queue(queue_* mqueue_){
+release_buf_queue(queue* mqueue_){
 	
 	int i = 0;
 	int size = mqueue_->tmp_queue_->size;
@@ -116,7 +116,7 @@ release_buf_queue(queue_* mqueue_){
 OPENAPI void
 release_queue(queue* msg_q){
 	assert( msg_q );
-	node* p = queue_pop();
+	node* p = queue_pop(msg_q);
 	while( p ){
 		free(p->udata);
 		free(p);
