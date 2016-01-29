@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <netinet/in.h>
+#include <pthread.h>
 #ifdef WIN32
 #define LockType CRITICAL_SECTION
 #define InitSpinLock(p, count) InitializeCriticalSectionAndSpinCount(&p , count)  
@@ -19,18 +20,17 @@
 
 #else
 
-#define Lock(p)
-#define UnLock(p) 
-#define LockType unsigned
+#define LockInit(p) pthread_mutex_init(&p, NULL)
+#define Lock(p) pthread_mutex_lock(&p)
+#define UnLock(p) pthread_mutex_unlock(&p)
+#define LockRelease(p) pthread_mutex_destroy(&p)
+#define LockType pthread_mutex_t
 #define AtomInc(ptr) __sync_add_and_fetch(&ptr, 1)
 #define AtomExc(ptr, count) __sync_add_and_fetch(&ptr, count)
 #define AtomCas(ptr, oldval, newval) __sync_bool_compare_and_swap(ptr, oldval, newval)
 #define AtomCasv(ptr, oldval, newval) __sync_val_compare_and_swap(ptr, oldval, newval)
 #endif
 
-#define Lock(p)
-#define UnLock(p) 
-#define LockType unsigned
 
 #define Check(p, str) if(!(p)){printf(str);}
 #define CHECK_MEM(p) Check(p,"OUT MEMMORY\n")
@@ -39,12 +39,12 @@
 #define COMM_API
 #define MAX_BUF_Q 1024
 
-#define SOCK_ACCEPT 	1
-#define SOCK_READ	2
-#define SOCK_WRITE	3
-#define SOCK_RBUF	4
-#define SOCK_REACCEPT	5
-#define SOCK_CLOSE	6
+#define SOCK_ACCEPT 	0
+#define SOCK_READ	1
+#define SOCK_WRITE	2
+#define SOCK_RBUF	3
+#define SOCK_REACCEPT	4
+#define SOCK_CLOSE	5
 
 typedef struct Poll_{
 	comm_u32  fd;

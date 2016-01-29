@@ -9,4 +9,6 @@ typedef struct iohandle_{
 	queue* msg_q_;
 }iohandle;
 
+int (main_thread_loop)(Poll* poll_, void* udata);
+
 #endif

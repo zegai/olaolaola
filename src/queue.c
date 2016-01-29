@@ -15,6 +15,7 @@ queue_init(){
 	memset(q_, 0, sizeof(queue));
 	q_->tmp_queue_ = (queue*)malloc(sizeof(queue));
 	CHECK_MEM( q_->tmp_queue_ );
+	memset(q_->tmp_queue_, 0, sizeof(queue));
 	return q_;
 }
 
@@ -37,6 +38,7 @@ make_queue_node(queue* mqueue_){
 	}
 	p = (queue_node*)malloc(sizeof(queue_node));
 	CHECK_MEM(p);
+	memset(p, 0, sizeof(queue_node));
 	return p;
 }
 
@@ -49,6 +51,7 @@ release_queue_node(queue* mqueue_, queue_node* p){
 		free( p );
 		return r;
 	}
+	node *ret = p->data;
 	p->data = NULL;
 	p->next = NULL;
 	if( !mqueue_->head ){
@@ -63,13 +66,14 @@ release_queue_node(queue* mqueue_, queue_node* p){
 		mqueue_->tail = p;
 	}
 	mqueue_->size ++;
-	return p->data;
+	return ret;
 }
 
 OPENAPI void
 queue_push(queue* mqueue_, node* nnode){
 
 	queue_node *p = make_queue_node(mqueue_->tmp_queue_);
+	p->data = nnode;
 	if( !mqueue_->head ){
 		mqueue_->head = p;
 	}
@@ -90,6 +94,7 @@ queue_pop(queue* mqueue_){
 	node* p = NULL;
 	
 	if( mqueue_->head ){
+		printf("HAVE NODE\n");
 		queue_node* q = mqueue_->head;
 		mqueue_->head = q->next;
 		p = release_queue_node(mqueue_->tmp_queue_, q);

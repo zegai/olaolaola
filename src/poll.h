@@ -35,13 +35,13 @@ net_del(int epfd, int sockfd){
 }
 
 static int
-net_wait(int epfd, node* retnode, int waitsize){
+net_wait(int epfd, node** retnode, int waitsize){
 	assert( waitsize );
 	struct epoll_event ev[waitsize];
 	int size = epoll_wait(epfd, ev, waitsize, -1);
 	int i = 0;
 	for (; i < size; ++i){
-		retnode[i].udata = ev[i].data.ptr;
+		retnode[i] = (node*)(ev[i].data.ptr);
 	}
 	return size;
 }

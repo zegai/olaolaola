@@ -5,7 +5,7 @@ COMM_LIB = ../lib/liblua.a
 OUT_NAME = test
 
 main : $(COMM_OBJ)
-	cc -lm -ldl -lpthread -o $(OUT_NAME) $(COMM_OBJ) -I$(COMM_INC) $(COMM_LIB)
+	cc -lm -ldl -lpthread -g -o $(OUT_NAME) $(COMM_OBJ) -I$(COMM_INC) $(COMM_LIB)
 test.o :test.c comm.h
 	cc -c test.c
 comm.o :comm.c queue.h poll.h comm.h

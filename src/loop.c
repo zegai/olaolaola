@@ -16,16 +16,23 @@ typedef int (*pwork)(buffer_queue* ,node*);
 int 
 io_accept(buffer_queue* b_q, node* pnode){
 	node* makenode = buf_new( b_q,  INIT_DATA_COUNT);
-	printf("New Connect Linked\n");
 	listen_handle* udata = (listen_handle *)pnode->udata;
 	struct sockaddr addr;
 	makenode->session = sock_accept(udata->lsfd, &addr);
-	net_add(udata->elfd, makenode->session, makenode);
+	char tmp[48];
+	inet_ntop(addr.sa_family, addr.sa_data, tmp, sizeof(tmp));
+	printf("Connect From : %s \n Session ID: %d\n", tmp, makenode->session);
+	makenode->data_type = SOCK_READ;
+	net_add(udata->elfd, udata->lsfd, pnode);
+	int flg = fcntl(makenode->session, F_GETFL, 0);
+	fcntl(makenode->session, F_SETFL, flg | O_NONBLOCK);
 	udata->link_count ++;
+	net_add(udata->elfd, makenode->session, makenode);
 }
 
 int 
 io_read(buffer_queue* b_q, node* pnode){
+	
 	int read_count = read(pnode->session, pnode->udata, pnode->info.size);
 	if(read_count == pnode->info.size){
 		printf("out buffer\n");
@@ -58,6 +65,7 @@ io_close(buffer_queue* b_q, node* pnode){
 void* 
 io_thread_loop(void *udata){
 	assert( udata );
+	printf("THREAD CREATE\n");
 	iohandle* pio = (iohandle*)udata;
 	buffer_queue* b_q = pio->bq_;
 	
@@ -82,7 +90,9 @@ io_thread_loop(void *udata){
 int 
 init_io(iohandle* io){
 	pthread_t ppid;
-	pthread_create(&ppid, NULL, &io_thread_loop, io);
+	io->msg_q_ = queue_init();
+	io->bq_ = buffer_queue_create(1024*512);
+	pthread_create(&ppid, NULL, io_thread_loop, io);
 }
 
 int 
@@ -108,19 +118,24 @@ restart:
 	reacceptnode.data_value = 0;
 	net_add(poll_->elfd, poll_->fd, &listennode);
 	init_io(io);
-
+	printf("EPOLL FD: %d\t LISTEN FD: %d\n", poll_->elfd, poll_->fd);
 	sock_bind( poll_->fd, &poll_->server_addr );
 	sock_listen( poll_->fd );
 	
 	//global_queue_init();
 	for( ; ; ){	
 		node* tmp[5];
-		int count = net_wait(poll_->elfd, tmp[0], 5);
+		int count = net_wait(poll_->elfd, tmp, 5);
+		printf("COUNT GET : %d\n", count);
 		if( count ){
-			for(int i=0 ; i < count ; ++i){
+			int i = 0; 
+			for(int i=0 ; i < count ; i++){
+				printf("MAKE I : %d\n", i);
 				if(tmp[i]->data_type == SOCK_ACCEPT){
+					printf("ACCEPT\n");
+					net_del(poll_->elfd, poll_->fd);
 					lock_queue_push( io->msg_q_,tmp[i] );
-					accept_val %= thread_count;
+					//accept_val %= thread_count;
 				}
 				else{
 					/**负载

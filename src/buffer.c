@@ -23,6 +23,9 @@ buffer_queue_create(int buf_size){
 	bq_->full_buf = malloc(buf_size);
 	bq_->big_buf = malloc(buf_size);
 	CHECK_MEM(bq_->s_q && bq_->m_q && bq_->b_q);
+	bq_->small_pos = bq_->full_buf;
+	bq_->middle_pos = bq_->full_buf + buf_size;
+	bq_->big_pos = bq_->big_buf;
 	return bq_;
 }
 
@@ -70,7 +73,9 @@ buf_create_middle(buffer_queue* queue_, int size){
 static node*
 buf_create_big(buffer_queue* queue_, int size){
 	node* nnode = (node *)( queue_->big_pos );
+	printf("1");
 	queue_->big_pos += sizeof(node) + size;
+	printf("2");
 	nnode->info.size = size;
 	nnode->info.cursize = 0;
 	nnode->udata = nnode + sizeof(node);

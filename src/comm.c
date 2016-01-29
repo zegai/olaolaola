@@ -4,6 +4,7 @@
 #include "lua.h"
 #include "lualib.h"
 #include "lauxlib.h"
+#include "loop.h"
 #define LUACFUNC
 
 typedef struct thread_{
@@ -102,7 +103,7 @@ init_poll_struct(lua_State* state){
 	poll_->elfd = fd;
 
 	fd = socket(AF_INET, SOCK_STREAM, 0);
-
+	poll_->fd = fd;
 	set_opt(state);
 }
 
@@ -222,6 +223,11 @@ release_worker_env(){
 		//save_data()
 		lua_close(worker_[i].state);
 	}
+}
+
+int
+start_loop(){
+	return main_thread_loop(poll_, lgset);
 }
 
 //main(int argc, char** argv)
